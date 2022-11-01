@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -45,6 +46,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.airbnb.lottie.LottieProperty
 import com.airbnb.lottie.compose.*
 import com.flyingcarpet.flyingcarpetandroid.ui.theme.FlyingCarpetAndroidTheme
 import com.google.accompanist.flowlayout.FlowRow
@@ -395,6 +397,26 @@ fun processScreen() {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.sending))
     val progress by animateLottieCompositionAsState(composition, clipSpec = LottieClipSpec.Frame(10,182),  iterations = LottieConstants.IterateForever,
     )
+    val dynamicProperties = rememberLottieDynamicProperties(
+        rememberLottieDynamicProperty(
+            property = LottieProperty.COLOR,
+            value = MaterialTheme.colorScheme.primary.toArgb(),
+            keyPath = arrayOf(
+                "**",
+                "Stroke 1 Color"
+            )
+
+        ),
+        rememberLottieDynamicProperty(
+            property = LottieProperty.STROKE_COLOR,
+            value = MaterialTheme.colorScheme.primary.toArgb(),
+            keyPath = arrayOf(
+                "**",
+                "Stroke 1 Color"
+            )
+
+        ),
+    )
     val processItems by remember {
         mutableStateOf(
             listOf<processItem>(
@@ -407,7 +429,8 @@ fun processScreen() {
     }
     Column(Modifier.padding(10.dp)) {
 
-        LottieAnimation(composition = composition, progress = progress, contentScale = ContentScale.Inside, modifier = Modifier.weight(1f))
+        LottieAnimation(composition = composition, progress = progress,dynamicProperties=dynamicProperties, contentScale = ContentScale.Inside, modifier = Modifier.weight(1f))
+
         Box(modifier = Modifier.height(IntrinsicSize.Max)) {
             Box(
                 modifier = Modifier
@@ -424,7 +447,9 @@ fun processScreen() {
                         .alpha(0.6f)
                 )
             }
-            Column(modifier = Modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Column(modifier = Modifier
+
+                , verticalArrangement = Arrangement.spacedBy(10.dp)) {
 
                 processItems.forEachIndexed { index, processItem ->
                     TimelineDot(
